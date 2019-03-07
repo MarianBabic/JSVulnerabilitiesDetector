@@ -6,6 +6,8 @@ const vscode = require('vscode');
 // your extension is activated the very first time the command is executed
 function activate(context) {
 
+    vscode.window.showInformationMessage('JS Vulnerabilities Detector activated!');
+
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "js-vulnerabilities-detector" is now active!');
