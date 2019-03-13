@@ -2,7 +2,7 @@
     "name": "js-vulnerabilities-detector",
     "displayName": "JS Vulnerabilities Detector",
     "description": "VisualStudio Code extension which detects security vulnerabilities in JavaScript.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "Marian",
     "engines": {
         "vscode": "^1.31.0"
@@ -11,19 +11,19 @@
         "Linters"
     ],
     "repository": {
-		"type": "git",
+        "type": "git",
         "url": "https://github.com/MarianBabic/JSVulnerabilitiesDetector.git"
-	},
+    },
     "activationEvents": [
-        "onCommand:extension.sayHello",
+        "onCommand:extension.showTime",
         "onLanguage:javascript"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "command": "extension.showTime",
+                "title": "Show Time"
             }
         ]
     },

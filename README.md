@@ -20,6 +20,10 @@ TODO
 
 ## Release Notes
 
+### 0.0.2
+
+Command "showTime" added for demonstration
+
 ### 0.0.1
 
 Alpha version demonstrating that this extension is installable and runnable.
