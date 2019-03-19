@@ -20,6 +20,10 @@ TODO
 
 ## Release Notes
 
+### 0.0.4
+
+Language server example imported.
+
 ### 0.0.3
 
 Author and License information added.
