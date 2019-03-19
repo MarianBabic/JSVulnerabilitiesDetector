@@ -20,9 +20,13 @@ TODO
 
 ## Release Notes
 
+### 0.0.3
+
+Author and License information added.
+
 ### 0.0.2
 
-Command "showTime" added for demonstration
+Command "showTime" added for demonstration.
 
 ### 0.0.1
 

@@ -2,7 +2,9 @@
     "name": "js-vulnerabilities-detector",
     "displayName": "JS Vulnerabilities Detector",
     "description": "VisualStudio Code extension which detects security vulnerabilities in JavaScript.",
-    "version": "0.0.2",
+    "author": "Marian Babic",
+    "license": "MIT",
+    "version": "0.0.3",
     "publisher": "Marian",
     "engines": {
         "vscode": "^1.31.0"
