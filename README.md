@@ -20,18 +20,6 @@ TODO
 
 ## Release Notes
 
-### 0.0.4
+### 0.0.5
 
-Language server example imported.
-
-### 0.0.3
-
-Author and License information added.
-
-### 0.0.2
-
-Command "showTime" added for demonstration.
-
-### 0.0.1
-
-Alpha version demonstrating that this extension is installable and runnable.
+Alpha version demonstrating that this extension utilising language server is installable and runnable.
