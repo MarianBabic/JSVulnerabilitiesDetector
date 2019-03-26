@@ -1,5 +1,6 @@
 import { Diagnostic, DiagnosticSeverity, TextDocument } from 'vscode-languageserver';
 import { ExampleSettings } from '../server';
+import { Utils } from './utils';
 
 export function validateDocument(
     textDocument: TextDocument,
@@ -16,26 +17,17 @@ export function validateDocument(
 
     while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
         problems++;
-        let diagnostic: Diagnostic = {
-            severity: DiagnosticSeverity.Warning,
-            range: {
-                start: textDocument.positionAt(m.index),
-                end: textDocument.positionAt(m.index + m[0].length)
-            },
-            message: `${m[0]} is all uppercase.`,
-            source: 'JS Vulnerabilities Detector'
-        };
-        if (hasDiagnosticRelatedInformationCapability) {
-            diagnostic.relatedInformation = [
-                {
-                    location: {
-                        uri: textDocument.uri,
-                        range: Object.assign({}, diagnostic.range)
-                    },
-                    message: 'Spelling matters'
-                }
-            ];
-        }
+        const rangeStart = m.index;
+        const rangeEnd = rangeStart + m[0].length;
+        const diagnostic = Utils.getDiagnostic(
+            DiagnosticSeverity.Warning,
+            textDocument.positionAt(rangeStart),
+            textDocument.positionAt(rangeEnd),
+            `${m[0]} is all uppercase.`,
+            hasDiagnosticRelatedInformationCapability,
+            textDocument.uri,
+            'Spelling matters.'
+        );
         diagnostics.push(diagnostic);
     }
 
@@ -48,26 +40,17 @@ export function validateDocument(
         const todoString = 'TODO';
 
         if (lines[i].includes(todoString)) {
-            let diagnostic: Diagnostic = {
-                severity: DiagnosticSeverity.Warning,
-                range: {
-                    start: textDocument.positionAt(charsCount + lines[i].indexOf(todoString)),
-                    end: textDocument.positionAt(charsCount + lines[i].indexOf(todoString) + todoString.length)
-                },
-                message: `${todoString} should be resolved.`,
-                source: 'JS Vulnerabilities Detector'
-            };
-            if (hasDiagnosticRelatedInformationCapability) {
-                diagnostic.relatedInformation = [
-                    {
-                        location: {
-                            uri: textDocument.uri,
-                            range: Object.assign({}, diagnostic.range)
-                        },
-                        message: `${todoString} should be resolved and deleted.`
-                    }
-                ];
-            }
+            const rangeStart = charsCount + lines[i].indexOf(todoString);
+            const rangeEnd = rangeStart + todoString.length;
+            const diagnostic = Utils.getDiagnostic(
+                DiagnosticSeverity.Warning,
+                textDocument.positionAt(rangeStart),
+                textDocument.positionAt(rangeEnd),
+                `${todoString} should be resolved.`,
+                hasDiagnosticRelatedInformationCapability,
+                textDocument.uri,
+                `${todoString} needs your attention.`
+            );
             diagnostics.push(diagnostic);
         }
 
