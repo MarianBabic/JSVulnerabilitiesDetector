@@ -20,6 +20,6 @@ TODO
 
 ## Release Notes
 
-### 0.0.5
+### 0.0.6
 
-Alpha version demonstrating that this extension utilising language server is installable and runnable.
+Alpha version demonstrating that this extension utilising language server is installable and runnable. Functionality is under development.

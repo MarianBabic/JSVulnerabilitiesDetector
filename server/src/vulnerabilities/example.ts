@@ -7,14 +7,13 @@ export function validateDocument(
     settings: ExampleSettings,
     hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
 
-    // check for all uppercase words length 2 and more
     let text = textDocument.getText();
-    let pattern = /\b[A-Z]{2,}\b/g;
-    let m: RegExpExecArray | null;
-
-    let problems = 0;
     let diagnostics: Diagnostic[] = [];
+    let problems = 0;
 
+    // check for TODOs
+    let pattern = /TODO/g;
+    let m: RegExpExecArray | null;
     while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
         problems++;
         const rangeStart = m.index;
@@ -23,37 +22,35 @@ export function validateDocument(
             DiagnosticSeverity.Warning,
             textDocument.positionAt(rangeStart),
             textDocument.positionAt(rangeEnd),
-            `${m[0]} is all uppercase.`,
+            `TODO should be resolved.`,
             hasDiagnosticRelatedInformationCapability,
             textDocument.uri,
-            'Spelling matters.'
+            'TODO needs your attention.'
         );
         diagnostics.push(diagnostic);
     }
 
-    // check for TODO strings
-
+    // check for '<script>...</script>' strings
     const lines: string[] = text.split('\n');
-
     let charsCount: number = 0;
     for (let i = 0; i < lines.length; i++) {
-        const todoString = 'TODO';
-
-        if (lines[i].includes(todoString)) {
-            const rangeStart = charsCount + lines[i].indexOf(todoString);
-            const rangeEnd = rangeStart + todoString.length;
+        const scriptOpenTag = '<script>';
+        const scriptCloseTag = '</script>';
+        if (lines[i].includes(scriptOpenTag) && problems < settings.maxNumberOfProblems) {
+            problems++;
+            const rangeStart = charsCount + lines[i].indexOf(scriptOpenTag);
+            const rangeEnd = rangeStart + lines[i].indexOf(scriptCloseTag) + 1;
             const diagnostic = Utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
-                `${todoString} should be resolved.`,
+                `Consider using ${scriptOpenTag} tag carefully.`,
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                `${todoString} needs your attention.`
+                `Possible XSS vulnerability.`
             );
             diagnostics.push(diagnostic);
         }
-
         charsCount += lines[i].length;
         charsCount += 1; // counting \n newline character too
     }
