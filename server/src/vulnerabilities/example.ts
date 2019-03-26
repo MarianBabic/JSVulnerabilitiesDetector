@@ -46,6 +46,7 @@ export function validateDocument(
     let charsCount: number = 0;
     for (let i = 0; i < lines.length; i++) {
         const todoString = 'TODO';
+
         if (lines[i].includes(todoString)) {
             let diagnostic: Diagnostic = {
                 severity: DiagnosticSeverity.Warning,
@@ -68,9 +69,10 @@ export function validateDocument(
                 ];
             }
             diagnostics.push(diagnostic);
-            charsCount += 2;
         }
+
         charsCount += lines[i].length;
+        charsCount += 1; // counting \n newline character too
     }
 
     return diagnostics;
