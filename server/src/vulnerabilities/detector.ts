@@ -8,20 +8,33 @@ export function validateDocument(
     hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
 
     let diagnostics: Diagnostic[] = [];
+    let diagnosticsTemp: Diagnostic[] = [];
     let text: string = textDocument.getText();
     let problemsCount: number = 0;
     const maxNumberOfProblems: number = settings.maxNumberOfProblems;
 
     if (problemsCount < maxNumberOfProblems) {
-        const diagnostics1: Diagnostic[] = checkForTodos(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
-        diagnostics.push(...diagnostics1);
-        problemsCount += diagnostics1.length;
+        diagnosticsTemp = checkForTodos(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
+        diagnostics.push(...diagnosticsTemp);
+        problemsCount += diagnosticsTemp.length;
     }
 
     if (problemsCount < maxNumberOfProblems) {
-        const diagnostics2: Diagnostic[] = checkForScriptStrings(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
-        diagnostics.push(...diagnostics2);
-        problemsCount += diagnostics2.length;
+        diagnosticsTemp = checkForScriptStrings(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
+        diagnostics.push(...diagnosticsTemp);
+        problemsCount += diagnosticsTemp.length;
+    }
+
+    if (problemsCount < maxNumberOfProblems) {
+        diagnosticsTemp = checkForEval(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
+        diagnostics.push(...diagnosticsTemp);
+        problemsCount += diagnosticsTemp.length;
+    }
+
+    if (problemsCount < maxNumberOfProblems) {
+        diagnosticsTemp = checkForInnerOuterHtml(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
+        diagnostics.push(...diagnosticsTemp);
+        problemsCount += diagnosticsTemp.length;
     }
 
     return diagnostics;
@@ -84,6 +97,84 @@ function checkForScriptStrings(
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
                 `Possible XSS vulnerability.`
+            );
+            diagnostics.push(diagnostic);
+
+            problemsCount++;
+            if (problemsCount == maxNumberOfProblems) {
+                break;
+            }
+        }
+        charsCount += lines[i].length;
+        charsCount += 1; // counting \n newline character too
+    }
+
+    return diagnostics;
+}
+
+// check for 'eval' function
+function checkForEval(
+    text: string,
+    problemsCount: number,
+    maxNumberOfProblems: number,
+    textDocument: TextDocument,
+    hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
+
+    let diagnostics: Diagnostic[] = [];
+    const lines: string[] = text.split('\n');
+    let charsCount: number = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes('eval')) {
+            const rangeStart: number = charsCount + lines[i].indexOf('eval');
+            const rangeEnd: number = rangeStart + lines[i].lastIndexOf(')') + 1;
+            const diagnostic: Diagnostic = Utils.getDiagnostic(
+                DiagnosticSeverity.Warning,
+                textDocument.positionAt(rangeStart),
+                textDocument.positionAt(rangeEnd),
+                `Consider using EVAL function carefully.`,
+                hasDiagnosticRelatedInformationCapability,
+                textDocument.uri,
+                `Huge risk of XSS vulnerability here.`
+            );
+            diagnostics.push(diagnostic);
+
+            problemsCount++;
+            if (problemsCount == maxNumberOfProblems) {
+                break;
+            }
+        }
+        charsCount += lines[i].length;
+        charsCount += 1; // counting \n newline character too
+    }
+
+    return diagnostics;
+}
+
+// check for 'innerHTML' and 'outerHTML'
+function checkForInnerOuterHtml(
+    text: string,
+    problemsCount: number,
+    maxNumberOfProblems: number,
+    textDocument: TextDocument,
+    hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
+
+    let diagnostics: Diagnostic[] = [];
+    const lines: string[] = text.split('\n');
+    let charsCount: number = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes('innerHTML') || lines[i].includes('outerHTML')) {
+            const rangeStart: number = charsCount;
+            const rangeEnd: number = rangeStart + lines[i].indexOf(';') + 1;
+            const diagnostic: Diagnostic = Utils.getDiagnostic(
+                DiagnosticSeverity.Warning,
+                textDocument.positionAt(rangeStart),
+                textDocument.positionAt(rangeEnd),
+                `Consider using this method carefully.`,
+                hasDiagnosticRelatedInformationCapability,
+                textDocument.uri,
+                `InnerHTML/OuterHTML DOM methods can be dangerous if untrusted input is inserted.`
             );
             diagnostics.push(diagnostic);
 
