@@ -16,7 +16,7 @@ import {
 	CompletionItemKind,
 	TextDocumentPositionParams
 } from 'vscode-languageserver';
-import { validateDocument } from './vulnerabilities/example';
+import { validateDocument } from './vulnerabilities/detector';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
