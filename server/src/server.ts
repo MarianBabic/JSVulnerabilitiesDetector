@@ -7,8 +7,6 @@ import {
 	createConnection,
 	TextDocuments,
 	TextDocument,
-	Diagnostic,
-	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
 	DidChangeConfigurationNotification,
