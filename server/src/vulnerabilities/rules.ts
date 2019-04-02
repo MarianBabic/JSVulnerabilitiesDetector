@@ -2,7 +2,7 @@ import { Diagnostic, DiagnosticSeverity, TextDocument } from 'vscode-languageser
 import { Utils } from './utils';
 
 // check for TODOs
-export function checkForTodos(
+function checkForTodos(
     text: string,
     problemsCount: number,
     maxNumberOfProblems: number,
@@ -33,7 +33,7 @@ export function checkForTodos(
 }
 
 // check for '<script>...</script>' strings
-export function checkForScriptStrings(
+function checkForScriptStrings(
     text: string,
     problemsCount: number,
     maxNumberOfProblems: number,
@@ -74,7 +74,7 @@ export function checkForScriptStrings(
 }
 
 // check for 'eval' function
-export function checkForEval(
+function checkForEval(
     text: string,
     problemsCount: number,
     maxNumberOfProblems: number,
@@ -113,7 +113,7 @@ export function checkForEval(
 }
 
 // check for 'innerHTML' and 'outerHTML'
-export function checkForInnerOuterHtml(
+function checkForInnerOuterHtml(
     text: string,
     problemsCount: number,
     maxNumberOfProblems: number,
@@ -149,4 +149,8 @@ export function checkForInnerOuterHtml(
     }
 
     return diagnostics;
+}
+
+export function getAllRules(): Function[] {
+    return [checkForTodos, checkForScriptStrings, checkForEval, checkForInnerOuterHtml];
 }

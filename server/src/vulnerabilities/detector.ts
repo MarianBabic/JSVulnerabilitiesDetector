@@ -13,28 +13,15 @@ export function validateDocument(
     let problemsCount: number = 0;
     const maxNumberOfProblems: number = settings.maxNumberOfProblems;
 
-    if (problemsCount < maxNumberOfProblems) {
-        diagnosticsTemp = rules.checkForTodos(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
+    const rulesArr: Function[] = rules.getAllRules();
+    for (const rule of rulesArr) {
+        diagnosticsTemp = rule(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
         diagnostics.push(...diagnosticsTemp);
         problemsCount += diagnosticsTemp.length;
-    }
 
-    if (problemsCount < maxNumberOfProblems) {
-        diagnosticsTemp = rules.checkForScriptStrings(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
-        diagnostics.push(...diagnosticsTemp);
-        problemsCount += diagnosticsTemp.length;
-    }
-
-    if (problemsCount < maxNumberOfProblems) {
-        diagnosticsTemp = rules.checkForEval(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
-        diagnostics.push(...diagnosticsTemp);
-        problemsCount += diagnosticsTemp.length;
-    }
-
-    if (problemsCount < maxNumberOfProblems) {
-        diagnosticsTemp = rules.checkForInnerOuterHtml(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
-        diagnostics.push(...diagnosticsTemp);
-        problemsCount += diagnosticsTemp.length;
+        if (problemsCount == maxNumberOfProblems) {
+            break;
+        }
     }
 
     return diagnostics;
