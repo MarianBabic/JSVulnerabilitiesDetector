@@ -12,7 +12,7 @@ function test2() {
 const input;
 
 // es marks it as eval function even without proper parenthesis
-eval, eval ()
+eval, eval()
 
 eval(function () { });
 _eval(input);
@@ -26,9 +26,5 @@ divEl.outerHTML = '<div>text</div>';
 divEl.outerHTML = input;
 
 document.write(input);
-document.writeln(input); divEl.innerHTML = '<div>text</div>';
-divEl.innerHTML = input;
-
-divEl.outerHTML = '<div>text</div>';
-divEl.outerHTML = input;
+document.writeln(input);
 

@@ -129,8 +129,8 @@ function checkForEval(
     return diagnostics;
 }
 
-// check for 'innerHTML' and 'outerHTML'
-function checkForInnerOuterHtml(
+// check for 'element.innerHTML = '...;', 'element.outerHTML = '...;', 'document.write(...);' and 'document.writeln(...);' rendering methods
+function checkForHtmlRenderingMethods(
     text: string,
     problemsCount: number,
     maxNumberOfProblems: number,
@@ -140,11 +140,30 @@ function checkForInnerOuterHtml(
     let diagnostics: Diagnostic[] = [];
     const lines: string[] = text.split('\n');
     let charsCount: number = 0;
+    const innerHtmlStart = '.innerHTML';
+    const outerHtmlStart = '.outerHTML';
+    const writeStart = '.write(';
+    const writeLnStart = '.writeln(';
 
     for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes('innerHTML') || lines[i].includes('outerHTML')) {
-            const rangeStart: number = charsCount;
-            const rangeEnd: number = rangeStart + lines[i].indexOf(';') + 1;
+        if (lines[i].includes(innerHtmlStart) || lines[i].includes(outerHtmlStart) || lines[i].includes(writeStart) || lines[i].includes(writeLnStart)) {
+            let rangeStart: number = charsCount;
+            let rangeEnd: number;
+
+            if (lines[i].includes(innerHtmlStart)) {
+                rangeStart += lines[i].indexOf(innerHtmlStart);
+                rangeEnd = rangeStart + innerHtmlStart.length;
+            } else if (lines[i].includes(outerHtmlStart)) {
+                rangeStart += lines[i].indexOf(outerHtmlStart);
+                rangeEnd = rangeStart + outerHtmlStart.length;
+            } else if (lines[i].includes(writeStart)) {
+                rangeStart += lines[i].indexOf(writeStart);
+                rangeEnd = rangeStart + writeStart.length;
+            } else if (lines[i].includes(writeLnStart)) {
+                rangeStart += lines[i].indexOf(writeLnStart);
+                rangeEnd = rangeStart + writeLnStart.length;
+            }
+
             const diagnostic: Diagnostic = Utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
@@ -152,7 +171,7 @@ function checkForInnerOuterHtml(
                 `Consider using this method carefully.`,
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                `InnerHTML/OuterHTML DOM methods can be dangerous if untrusted input is inserted.`
+                `Avoid populating this method with untrusted data. Possible XSS vulnerability.`
             );
             diagnostics.push(diagnostic);
 
@@ -161,12 +180,12 @@ function checkForInnerOuterHtml(
                 break;
             }
         }
-        charsCount += lines[i].length; // +1 to include \n newline character in counting too
+        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
     }
 
     return diagnostics;
 }
 
 export function getAllRules(): Function[] {
-    return [checkForTodos, checkForScriptStrings, checkForEval, checkForInnerOuterHtml];
+    return [checkForTodos, checkForScriptStrings, checkForEval, checkForHtmlRenderingMethods];
 }
