@@ -1,6 +1,13 @@
-// TODO <script>alert('test');</script>
+// TODO
+function test1() {
+    return `<script>alert('test');</script>`
+}
 
-<script>a</script>
+function test2() {
+    return `<script>
+    console.log('test')
+    </script>` // TODO
+}
 
 const input;
 
@@ -16,7 +23,7 @@ divEl.outerHTML = '<div>text</div>';
 divEl.outerHTML = input;
 
 document.write(input);
-document.writeln(input);divEl.innerHTML = '<div>text</div>';
+document.writeln(input); divEl.innerHTML = '<div>text</div>';
 divEl.innerHTML = input;
 
 divEl.outerHTML = '<div>text</div>';

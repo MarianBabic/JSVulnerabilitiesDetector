@@ -21,7 +21,7 @@ function checkForTodos(
             DiagnosticSeverity.Warning,
             textDocument.positionAt(rangeStart),
             textDocument.positionAt(rangeEnd),
-            `TODO should be resolved.`,
+            'TODO should be resolved.',
             false,
             null,
             null
@@ -32,7 +32,7 @@ function checkForTodos(
     return diagnostics;
 }
 
-// check for '<script>...</script>' strings
+// check for '<script>...</script>' blocks of the code
 function checkForScriptStrings(
     text: string,
     problemsCount: number,
@@ -49,15 +49,33 @@ function checkForScriptStrings(
         const scriptCloseTag: string = '</script>';
         if (lines[i].includes(scriptOpenTag)) {
             const rangeStart: number = charsCount + lines[i].indexOf(scriptOpenTag);
-            const rangeEnd: number = rangeStart + lines[i].indexOf(scriptCloseTag) + 1;
+
+            let rangeEnd: number;
+            if (lines[i].includes(scriptCloseTag)) {
+                rangeEnd = charsCount + lines[i].indexOf(scriptCloseTag) + scriptCloseTag.length;
+            } else {
+                let charsCountTemp = charsCount + lines[i].length + 1;
+                for (let j = i + 1; j < lines.length; j++) {
+                    if (lines[j].includes(scriptCloseTag)) {
+                        rangeEnd = charsCountTemp + lines[j].indexOf(scriptCloseTag) + scriptCloseTag.length;
+                        break;
+                    }
+                    charsCountTemp += lines[j].length + 1;
+                }
+            }
+            if (!rangeEnd) {
+                // if closing </script> tag is not found only opening <script> tag will be highlighted
+                rangeEnd = rangeStart + scriptOpenTag.length;
+            }
+
             const diagnostic: Diagnostic = Utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
-                `Consider using ${scriptOpenTag} tag carefully.`,
+                `Consider using '<script>...</script>' block of the code carefully.`,
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                `Possible XSS vulnerability.`
+                'Possible XSS vulnerability.'
             );
             diagnostics.push(diagnostic);
 
@@ -66,8 +84,7 @@ function checkForScriptStrings(
                 break;
             }
         }
-        charsCount += lines[i].length;
-        charsCount += 1; // counting \n newline character too
+        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
     }
 
     return diagnostics;
