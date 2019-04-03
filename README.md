@@ -4,7 +4,9 @@ JS Vulnerabilities Detector is a VisualStudio Code extension which detects secur
 
 ## Features
 
-Detects and highlights suspicious and potentionally vulnerable code:
+Detects and highlights suspicious and potentionally vulnerable code.
+
+Rules:
 - TODO notes
 - 'script' code blocks
 - 'eval' functions
@@ -20,13 +22,20 @@ TODO
 
 ## Extension Settings
 
-TODO
+Following can be configured in Settings -> Extensions -> JS Vulnerabilities Detector:
+- individual rules can be turned on/off - all are turned on by default
+- max number of problems detected and reported - 100 by default
+- tracing communication between VS Code and server - turned off by default
 
 ## Known Issues
 
 None.
 
 ## Release Notes
+
+### 0.2.0
+
+Rules can be turned on/off in Settings.
 
 ### 0.1.0
 
