@@ -1,5 +1,5 @@
 import { Diagnostic, DiagnosticSeverity, TextDocument } from 'vscode-languageserver';
-import { Utils } from './utils';
+import * as utils from './utils';
 
 // check for 'TODO' notes in the code
 function checkForTodos(
@@ -17,7 +17,7 @@ function checkForTodos(
         problemsCount++;
         const rangeStart: number = m.index;
         const rangeEnd: number = rangeStart + m[0].length;
-        const diagnostic: Diagnostic = Utils.getDiagnostic(
+        const diagnostic: Diagnostic = utils.getDiagnostic(
             DiagnosticSeverity.Warning,
             textDocument.positionAt(rangeStart),
             textDocument.positionAt(rangeEnd),
@@ -68,7 +68,7 @@ function checkForScriptStrings(
                 rangeEnd = rangeStart + scriptOpenTag.length;
             }
 
-            const diagnostic: Diagnostic = Utils.getDiagnostic(
+            const diagnostic: Diagnostic = utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
@@ -107,7 +107,7 @@ function checkForEval(
         if (lines[i].includes(evalStart) && [undefined, ' '].includes(lines[i][lines[i].indexOf(evalStart) - 1])) {
             const rangeStart: number = charsCount + lines[i].indexOf(evalStart);
             const rangeEnd: number = rangeStart + evalStart.length;
-            const diagnostic: Diagnostic = Utils.getDiagnostic(
+            const diagnostic: Diagnostic = utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
@@ -170,7 +170,7 @@ function checkForHtmlRenderingMethods(
                 rangeEnd = rangeStart + writeLnStart.length;
             }
 
-            const diagnostic: Diagnostic = Utils.getDiagnostic(
+            const diagnostic: Diagnostic = utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
@@ -192,6 +192,22 @@ function checkForHtmlRenderingMethods(
     return diagnostics;
 }
 
-export function getAllRules(): Function[] {
-    return [checkForTodos, checkForScriptStrings, checkForEval, checkForHtmlRenderingMethods];
+// returns array of functions for rules which are turned on in Settings
+export function getApplicableRules(settings: utils.JSVulnerabilitiesDetectorSettings): Function[] {
+    let rules: Function[] = [];
+
+    if (settings.evalFunctions) {
+        rules.push(checkForEval);
+    }
+    if (settings.htmlRenderingMethods) {
+        rules.push(checkForHtmlRenderingMethods);
+    }
+    if (settings.scriptCodeBlocks) {
+        rules.push(checkForScriptStrings);
+    }
+    if (settings.todoNotes) {
+        rules.push(checkForTodos);
+    }
+
+    return rules;
 }

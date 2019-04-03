@@ -24,15 +24,15 @@
     "contributes": {
         "configuration": {
             "type": "object",
-            "title": "Example configuration",
+            "title": "JS Vulnerabilities Detector configuration",
             "properties": {
-                "languageServerExample.maxNumberOfProblems": {
+                "jsVulnerabilitiesDetector.maxNumberOfProblems": {
                     "scope": "resource",
                     "type": "number",
                     "default": 100,
                     "description": "Controls the maximum number of problems produced by the server."
                 },
-                "languageServerExample.trace.server": {
+                "jsVulnerabilitiesDetector.trace.server": {
                     "scope": "window",
                     "type": "string",
                     "enum": [
@@ -42,6 +42,30 @@
                     ],
                     "default": "off",
                     "description": "Traces the communication between VS Code and the language server."
+                },
+                "jsVulnerabilitiesDetector.evalFunctions": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Rules: Detect 'eval' functions."
+                },
+                "jsVulnerabilitiesDetector.htmlRenderingMethods": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Rules: Detect HTML Rendering methods (element.innerHTML, element.outerHTML, document.write(), document.writeln())."
+                },
+                "jsVulnerabilitiesDetector.scriptCodeBlocks": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Rules: Detect 'script' code blocks."
+                },
+                "jsVulnerabilitiesDetector.todoNotes": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Rules: Detect TODO Notes."
                 }
             }
         }

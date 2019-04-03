@@ -1,10 +1,10 @@
 import { Diagnostic, TextDocument } from 'vscode-languageserver';
-import { ExampleSettings } from '../server';
+import { JSVulnerabilitiesDetectorSettings } from './utils';
 import * as rules from './rules';
 
 export function validateDocument(
     textDocument: TextDocument,
-    settings: ExampleSettings,
+    settings: JSVulnerabilitiesDetectorSettings,
     hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
 
     let diagnostics: Diagnostic[] = [];
@@ -13,7 +13,7 @@ export function validateDocument(
     let problemsCount: number = 0;
     const maxNumberOfProblems: number = settings.maxNumberOfProblems;
 
-    const rulesArr: Function[] = rules.getAllRules();
+    const rulesArr: Function[] = rules.getApplicableRules(settings);
     for (const rule of rulesArr) {
         diagnosticsTemp = rule(text, problemsCount, maxNumberOfProblems, textDocument, hasDiagnosticRelatedInformationCapability);
         diagnostics.push(...diagnosticsTemp);
