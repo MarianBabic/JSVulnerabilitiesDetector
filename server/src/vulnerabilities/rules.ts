@@ -122,8 +122,7 @@ function checkForEval(
                 break;
             }
         }
-        charsCount += lines[i].length;
-        charsCount += 1; // counting \n newline character too
+        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
     }
 
     return diagnostics;
@@ -161,8 +160,7 @@ function checkForInnerOuterHtml(
                 break;
             }
         }
-        charsCount += lines[i].length;
-        charsCount += 1; // counting \n newline character too
+        charsCount += lines[i].length; // +1 to include \n newline character in counting too
     }
 
     return diagnostics;
