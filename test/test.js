@@ -11,8 +11,11 @@ function test2() {
 
 const input;
 
+// es marks it as eval function even without proper parenthesis
+eval, eval ()
+
 eval(function () { });
-eval(input);
+_eval(input);
 
 let divEl = new HTMLElement();
 
@@ -29,8 +32,3 @@ divEl.innerHTML = input;
 divEl.outerHTML = '<div>text</div>';
 divEl.outerHTML = input;
 
-alert('test');
-alert("test");
-
-console.log('test');
-console.log("test");

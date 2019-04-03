@@ -43,10 +43,10 @@ function checkForScriptStrings(
     let diagnostics: Diagnostic[] = [];
     const lines: string[] = text.split('\n');
     let charsCount: number = 0;
+    const scriptOpenTag: string = '<script>';
+    const scriptCloseTag: string = '</script>';
 
     for (let i = 0; i < lines.length; i++) {
-        const scriptOpenTag: string = '<script>';
-        const scriptCloseTag: string = '</script>';
         if (lines[i].includes(scriptOpenTag)) {
             const rangeStart: number = charsCount + lines[i].indexOf(scriptOpenTag);
 
@@ -90,7 +90,7 @@ function checkForScriptStrings(
     return diagnostics;
 }
 
-// check for 'eval' function
+// check for 'eval' functions
 function checkForEval(
     text: string,
     problemsCount: number,
@@ -101,11 +101,12 @@ function checkForEval(
     let diagnostics: Diagnostic[] = [];
     const lines: string[] = text.split('\n');
     let charsCount: number = 0;
+    const evalStart: string = 'eval(';
 
     for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes('eval')) {
-            const rangeStart: number = charsCount + lines[i].indexOf('eval');
-            const rangeEnd: number = rangeStart + lines[i].lastIndexOf(')') + 1;
+        if (lines[i].includes(evalStart) && [undefined, ' '].includes(lines[i][lines[i].indexOf(evalStart) - 1])) {
+            const rangeStart: number = charsCount + lines[i].indexOf(evalStart);
+            const rangeEnd: number = rangeStart + evalStart.length;
             const diagnostic: Diagnostic = Utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
@@ -113,7 +114,7 @@ function checkForEval(
                 `Consider using EVAL function carefully.`,
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                `Huge risk of XSS vulnerability here.`
+                `Possible XSS vulnerability.`
             );
             diagnostics.push(diagnostic);
 
