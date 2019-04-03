@@ -75,7 +75,7 @@ function checkForScriptStrings(
                 `Consider using '<script>...</script>' block of the code carefully.`,
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                'Possible XSS vulnerability.'
+                'Avoid inserting untrusted data between <script> tags. Possible XSS vulnerability.'
             );
             diagnostics.push(diagnostic);
 
@@ -114,7 +114,7 @@ function checkForEval(
                 `Consider using EVAL function carefully.`,
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                `Possible XSS vulnerability.`
+                `Avoid populating this function with untrusted data. Possible XSS vulnerability.`
             );
             diagnostics.push(diagnostic);
 
