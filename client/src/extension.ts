@@ -37,8 +37,11 @@ export function activate(context: ExtensionContext) {
 
 	// Options to control the language client
 	let clientOptions: LanguageClientOptions = {
-		// Register the server for javascript documents
-		documentSelector: [{ scheme: 'file', language: 'javascript' }],
+		// Register the server for javascript and typescript documents
+		documentSelector: [
+			{ scheme: 'file', language: 'javascript' },
+			{ scheme: 'file', language: 'typescript' }
+		],
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')

@@ -17,7 +17,8 @@
         "url": "https://github.com/MarianBabic/JSVulnerabilitiesDetector.git"
     },
     "activationEvents": [
-        "onLanguage:javascript"
+        "onLanguage:javascript",
+        "onLanguage:typescript"
     ],
     "main": "./client/out/extension",
     "contributes": {

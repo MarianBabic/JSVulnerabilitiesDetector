@@ -1,5 +1,7 @@
 // TODO <script>alert('test');</script>
 
+<script>a</script>
+
 const input;
 
 eval(function () { });
