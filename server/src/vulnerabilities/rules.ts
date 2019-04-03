@@ -129,7 +129,13 @@ function checkForEval(
     return diagnostics;
 }
 
-// check for 'element.innerHTML = '...;', 'element.outerHTML = '...;', 'document.write(...);' and 'document.writeln(...);' rendering methods
+/**
+ * check for HTML rendering methods:
+ * 1. element.innerHTML = "...";
+ * 2. element.outerHTML = "...";
+ * 3. document.write(...);
+ * 4. document.writeln(...);
+ * */
 function checkForHtmlRenderingMethods(
     text: string,
     problemsCount: number,
