@@ -1,7 +1,7 @@
 import { Diagnostic, DiagnosticSeverity, TextDocument } from 'vscode-languageserver';
 import { Utils } from './utils';
 
-// check for TODOs
+// check for 'TODO' notes in the code
 function checkForTodos(
     text: string,
     problemsCount: number,
@@ -22,9 +22,9 @@ function checkForTodos(
             textDocument.positionAt(rangeStart),
             textDocument.positionAt(rangeEnd),
             `TODO should be resolved.`,
-            hasDiagnosticRelatedInformationCapability,
-            textDocument.uri,
-            'TODO needs your attention.'
+            false,
+            null,
+            null
         );
         diagnostics.push(diagnostic);
     }
