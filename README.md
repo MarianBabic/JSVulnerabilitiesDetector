@@ -18,7 +18,7 @@ Rules:
 
 ## Requirements
 
-TODO
+VS Code >= 1.31.0 
 
 ## Extension Settings
 
