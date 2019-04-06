@@ -1,5 +1,8 @@
 // TODO
 
+let el = new HTMLElement();
+el.innerHTML = '';
+
 // sonarlint warning
 for (let i = 0; i < 5; i++) {
 
