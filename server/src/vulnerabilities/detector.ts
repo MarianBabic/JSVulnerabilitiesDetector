@@ -1,4 +1,4 @@
-import { Diagnostic, TextDocument } from 'vscode-languageserver';
+import { Diagnostic, TextDocument, CodeAction, CodeActionKind, CodeActionParams, Command } from 'vscode-languageserver';
 import { JSVulnerabilitiesDetectorSettings } from './utils';
 import * as rules from './rules';
 
@@ -25,4 +25,25 @@ export function validateDocument(
     }
 
     return diagnostics;
+}
+
+export function getCodeActions(params: CodeActionParams): (Command | CodeAction)[] {
+    params.context;
+    params.range;
+    params.textDocument;
+
+    return [
+        {
+            title: "example 1",
+            kind: CodeActionKind.QuickFix
+        },
+        {
+            title: "example 2",
+            kind: CodeActionKind.QuickFix
+        },
+        {
+            title: "example 3",
+            kind: CodeActionKind.Refactor
+        }
+    ];
 }

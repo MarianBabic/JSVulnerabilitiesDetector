@@ -12,10 +12,11 @@ import {
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	CompletionItemKind,
-	TextDocumentPositionParams
+	TextDocumentPositionParams,
+	CodeActionParams,
 } from 'vscode-languageserver';
 
-import { validateDocument } from './vulnerabilities/detector';
+import * as detector from './vulnerabilities/detector';
 import { JSVulnerabilitiesDetectorSettings } from './vulnerabilities/utils';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
@@ -48,7 +49,9 @@ connection.onInitialize((params: InitializeParams) => {
 			// Tell the client that the server supports code completion
 			completionProvider: {
 				resolveProvider: true
-			}
+			},
+			// Tell the client that the server provides Code Actions
+			codeActionProvider: true
 		}
 	};
 });
@@ -128,10 +131,16 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	let settings = await getDocumentSettings(textDocument.uri);
 
 	// The validator creates diagnostics
-	let diagnostics = validateDocument(textDocument, settings, hasDiagnosticRelatedInformationCapability);
+	let diagnostics = detector.validateDocument(textDocument, settings, hasDiagnosticRelatedInformationCapability);
 
 	// Send the computed diagnostics to VSCode.
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+
+	// TODO:
+	// connection.window.showWarningMessage(`
+	// 	JS Vulnerabilities Detector:\n
+	// 	${diagnostics.length} issue${diagnostics.length == 1 ? '' : 's'} detected in current file!
+	// `);
 }
 
 connection.onDidChangeWatchedFiles(_change => {
@@ -174,6 +183,8 @@ connection.onCompletionResolve(
 		return item;
 	}
 );
+
+connection.onCodeAction((params: CodeActionParams) => detector.getCodeActions(params));
 
 /*
 connection.onDidOpenTextDocument((params) => {
