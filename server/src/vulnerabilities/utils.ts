@@ -13,6 +13,7 @@ export function getDiagnostic(
     rangeStart: Position,
     rangeEnd: Position,
     messageMain: string,
+    codeSuffix: string,
     hasDiagnosticRelatedInformationCapability: boolean,
     uri: string,
     messageRelated: string) {
@@ -24,7 +25,8 @@ export function getDiagnostic(
             end: rangeEnd
         },
         message: messageMain,
-        source: 'JS Vulnerabilities Detector'
+        source: 'JS Vulnerabilities Detector',
+        code: 'jsvd-' + codeSuffix
     };
 
     if (hasDiagnosticRelatedInformationCapability) {

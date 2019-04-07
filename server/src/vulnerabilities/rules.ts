@@ -22,6 +22,7 @@ function checkForTodos(
             textDocument.positionAt(rangeStart),
             textDocument.positionAt(rangeEnd),
             'TODO should be resolved.',
+            '1',
             false,
             null,
             null
@@ -73,9 +74,10 @@ function checkForScriptStrings(
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
                 `Consider using '<script>...</script>' block of the code carefully.`,
+                '2',
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                'Avoid inserting untrusted data between <script> tags. Possible XSS vulnerability.'
+                `Avoid inserting untrusted data between '<script>' tags. Possible XSS vulnerability.`
             );
             diagnostics.push(diagnostic);
 
@@ -111,10 +113,11 @@ function checkForEval(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
-                `Consider using EVAL function carefully.`,
+                'Consider using EVAL function carefully.',
+                '3',
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                `Avoid populating this function with untrusted data. Possible XSS vulnerability.`
+                'Avoid populating this function with untrusted data. Possible XSS vulnerability.'
             );
             diagnostics.push(diagnostic);
 
@@ -174,10 +177,11 @@ function checkForHtmlRenderingMethods(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
-                `Consider using this method carefully.`,
+                'Consider using this HTML rendering method carefully.',
+                '4',
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                `Avoid populating this method with untrusted data. Possible XSS vulnerability.`
+                'Avoid populating this method with untrusted data. Possible XSS vulnerability.'
             );
             diagnostics.push(diagnostic);
 

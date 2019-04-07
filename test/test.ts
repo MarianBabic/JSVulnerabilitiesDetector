@@ -1,6 +1,6 @@
 // TODO
 
-let el = new HTMLElement();
+const el = new HTMLElement();
 el.innerHTML = '';
 
 // sonarlint warning

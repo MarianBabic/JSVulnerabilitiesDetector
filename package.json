@@ -4,7 +4,7 @@
     "description": "VisualStudio Code extension which detects security vulnerabilities in JavaScript.",
     "author": "Marian Babic",
     "license": "MIT",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "publisher": "Marian",
     "engines": {
         "vscode": "^1.31.0"
