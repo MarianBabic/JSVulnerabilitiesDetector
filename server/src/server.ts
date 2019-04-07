@@ -13,7 +13,7 @@ import {
 	CompletionItem,
 	CompletionItemKind,
 	TextDocumentPositionParams,
-	CodeActionParams,
+	CodeActionParams
 } from 'vscode-languageserver';
 
 import * as detector from './vulnerabilities/detector';
