@@ -1,5 +1,5 @@
-import { Diagnostic, TextDocument, CodeAction, CodeActionKind, CodeActionParams, Command, DiagnosticSeverity, CodeActionContext, Range, TextDocumentIdentifier, Position } from 'vscode-languageserver';
-import { JSVulnerabilitiesDetectorSettings, getDiagnostic } from './utils';
+import { Diagnostic, TextDocument, CodeAction, CodeActionKind, CodeActionParams, Command, CodeActionContext, Range, TextDocumentIdentifier, Position } from 'vscode-languageserver';
+import { JSVulnerabilitiesDetectorSettings } from './utils';
 import * as rules from './rules';
 
 export function validateDocument(
