@@ -1,4 +1,17 @@
-import { CodeAction, CodeActionKind, CodeActionProvider, Diagnostic, WorkspaceEdit } from 'vscode';
+import {
+    CancellationToken,
+    CodeAction,
+    CodeActionContext,
+    CodeActionKind,
+    CodeActionProvider,
+    Command,
+    Diagnostic,
+    ProviderResult,
+    Range,
+    Selection,
+    TextDocument,
+    WorkspaceEdit
+} from 'vscode';
 
 // returns javascript and typescript documents
 export function getDocumentSelector():
@@ -28,12 +41,13 @@ export function getDocumentSelector():
 
 export class JSVDCodeActionProvider implements CodeActionProvider {
     provideCodeActions(
-        document: import("vscode").TextDocument,
-        range: import("vscode").Range | import("vscode").Selection,
-        context: import("vscode").CodeActionContext,
-        token: import("vscode").CancellationToken): import("vscode").ProviderResult<(import("vscode").Command | import("vscode").CodeAction)[]> {
+        document: TextDocument,
+        range: Range | Selection,
+        context: CodeActionContext,
+        token: CancellationToken): ProviderResult<(Command | CodeAction)[]> {
 
         const diagnosticsArray: Diagnostic[] = context.diagnostics;
+        const isSingleLine: boolean = range.isSingleLine;
         const result: CodeAction[] = [];
 
         diagnosticsArray.forEach(element => {

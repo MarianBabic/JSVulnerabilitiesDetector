@@ -12,8 +12,7 @@ import {
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	CompletionItemKind,
-	TextDocumentPositionParams,
-	CodeActionParams
+	TextDocumentPositionParams
 } from 'vscode-languageserver';
 
 import * as detector from './vulnerabilities/detector';
@@ -49,9 +48,7 @@ connection.onInitialize((params: InitializeParams) => {
 			// Tell the client that the server supports code completion
 			completionProvider: {
 				resolveProvider: true
-			},
-			// Tell the client that the server provides Code Actions
-			// codeActionProvider: true
+			}
 		}
 	};
 });
@@ -183,8 +180,6 @@ connection.onCompletionResolve(
 		return item;
 	}
 );
-
-// connection.onCodeAction((params: CodeActionParams) => detector.getCodeActions(params));
 
 /*
 connection.onDidOpenTextDocument((params) => {
