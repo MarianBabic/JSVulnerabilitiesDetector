@@ -52,24 +52,29 @@ export class JSVDCodeActionProvider implements CodeActionProvider {
 
         diagnosticsArray.forEach(element => {
             if (element.code.toString().includes('jsvd-')) { // only jsvd diagnostics'
-                if (element.code.toString() === 'jsvd-4') {
-                    const edit = new WorkspaceEdit();
-                    edit.replace(document.uri, range, `escape(${document.getText(range)})`);
+                if (element.code.toString() === 'jsvd-4' && document.getText(range).includes('.write(')) {
+                    const escapeAssignedData = new WorkspaceEdit();
+                    // TODO: make this function smarter :)
+                    function getNewText(underlinedText: string): string {
+                        const assignedData = underlinedText.substring(7, underlinedText.length - 2);
+                        return `.write(escape(${assignedData}));`;
+                    }
+                    escapeAssignedData.replace(document.uri, range, getNewText(document.getText(range)));
+
+                    result.push({
+                        title: 'Escape assigned data',
+                        kind: CodeActionKind.QuickFix,
+                        edit: escapeAssignedData
+                    });
 
                     // const makeUpperCase = new WorkspaceEdit();
                     // makeUpperCase.replace(document.uri, range, document.getText(range).toUpperCase());
-
-                    result.push({
-                        title: 'Escape Input',
-                        kind: CodeActionKind.QuickFix,
-                        edit: edit
-                    })
 
                     // result.push({
                     //     title: 'Make UpperCase',
                     //     kind: CodeActionKind.QuickFix,
                     //     edit: makeUpperCase
-                    // })
+                    // });
                 }
             }
         })

@@ -33,6 +33,10 @@ None.
 
 ## Release Notes
 
+### 0.3.0
+
+Code actions for some of the detected vulnerabilities introduced.
+
 ### 0.2.0
 
 Rules can be turned on/off in Settings.

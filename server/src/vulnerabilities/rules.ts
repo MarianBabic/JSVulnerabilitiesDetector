@@ -155,7 +155,7 @@ function checkForHtmlRenderingMethods(
     const writeLnStart = '.writeln(';
 
     for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(innerHtmlStart) || lines[i].includes(outerHtmlStart) || lines[i].includes(writeStart) || lines[i].includes(writeLnStart)) {
+        if (lines[i].includes(innerHtmlStart) || lines[i].includes(outerHtmlStart) || (lines[i].includes(writeStart) && !lines[i].includes(writeStart + 'escape(')) || lines[i].includes(writeLnStart)) {
             let rangeStart: number = charsCount;
             let rangeEnd: number;
 
@@ -167,7 +167,8 @@ function checkForHtmlRenderingMethods(
                 rangeEnd = rangeStart + outerHtmlStart.length;
             } else if (lines[i].includes(writeStart)) {
                 rangeStart += lines[i].indexOf(writeStart);
-                rangeEnd = rangeStart + writeStart.length;
+                // rangeEnd = rangeStart + writeStart.length;
+                rangeEnd = charsCount + lines[i].length; // to the end of current line
             } else if (lines[i].includes(writeLnStart)) {
                 rangeStart += lines[i].indexOf(writeLnStart);
                 rangeEnd = rangeStart + writeLnStart.length;
