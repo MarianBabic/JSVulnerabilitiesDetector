@@ -1,4 +1,4 @@
-import { Diagnostic, TextDocument, CodeAction, CodeActionKind, CodeActionParams, Command, CodeActionContext, Range, TextDocumentIdentifier, Position } from 'vscode-languageserver';
+import { Diagnostic, TextDocument, CodeAction, CodeActionKind, CodeActionParams, Command, CodeActionContext, Range, TextDocumentIdentifier, Position, WorkspaceEdit } from 'vscode-languageserver';
 import { JSVulnerabilitiesDetectorSettings } from './utils';
 import * as rules from './rules';
 
@@ -27,37 +27,38 @@ export function validateDocument(
     return diagnostics;
 }
 
-export function getCodeActions(params: CodeActionParams): (Command | CodeAction)[] {
-    const context: CodeActionContext = params.context;
-    const range: Range = params.range;
-    const textDocument: TextDocumentIdentifier = params.textDocument;
+// export function getCodeActions(params: CodeActionParams): (Command | CodeAction)[] {
+//     const textDocument: TextDocumentIdentifier = params.textDocument;
+//     const range: Range = params.range;
+//     const context: CodeActionContext = params.context;
 
-    const diagnosticsArray: Diagnostic[] = context.diagnostics;
-    const only: string[] = context.only;
-    const start: Position = range.start;
-    const end: Position = range.end;
-    const uri: string = textDocument.uri;
+//     const uri: string = textDocument.uri;
+//     const start: Position = range.start;
+//     const end: Position = range.end;
+//     const diagnosticsArray: Diagnostic[] = context.diagnostics;
+//     const only: string[] = context.only;
 
-    const result: CodeAction[] = [];
+//     const result: CodeAction[] = [];
 
-    diagnosticsArray.forEach(element => {
-        if (element.code.toString().includes('jsvd-')) { // only jsvd diagnostics'
-            if (element.code === 'jsvd-4') {
-                result.push(
-                    {
-                        title: 'Escape whole input',
-                        kind: CodeActionKind.QuickFix,
-                    }
-                )
-                result.push(
-                    {
-                        title: 'Ignore vulnerable part of the input',
-                        kind: CodeActionKind.QuickFix,
-                    }
-                )
-            }
-        }
-    });
+//     diagnosticsArray.forEach(element => {
+//         if (element.code.toString().includes('jsvd-')) { // only jsvd diagnostics'
+//             if (element.code === 'jsvd-4') {
+//                 result.push(
+//                     {
+//                         title: 'Escape whole input',
+//                         kind: CodeActionKind.QuickFix,
+//                         // edit: edit
+//                     }
+//                 )
+//                 result.push(
+//                     {
+//                         title: 'Ignore vulnerable part of the input',
+//                         kind: CodeActionKind.QuickFix,
+//                     }
+//                 )
+//             }
+//         }
+//     });
 
-    return result;
-}
+//     return result;
+// }

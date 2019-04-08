@@ -51,7 +51,7 @@ connection.onInitialize((params: InitializeParams) => {
 				resolveProvider: true
 			},
 			// Tell the client that the server provides Code Actions
-			codeActionProvider: true
+			// codeActionProvider: true
 		}
 	};
 });
@@ -184,7 +184,7 @@ connection.onCompletionResolve(
 	}
 );
 
-connection.onCodeAction((params: CodeActionParams) => detector.getCodeActions(params));
+// connection.onCodeAction((params: CodeActionParams) => detector.getCodeActions(params));
 
 /*
 connection.onDidOpenTextDocument((params) => {
