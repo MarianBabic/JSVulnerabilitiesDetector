@@ -56,8 +56,8 @@ export class JSVDCodeActionProvider implements CodeActionProvider {
                     const edit = new WorkspaceEdit();
                     edit.replace(document.uri, range, `escape(${document.getText(range)})`);
 
-                    const makeUpperCase = new WorkspaceEdit();
-                    makeUpperCase.replace(document.uri, range, document.getText(range).toUpperCase());
+                    // const makeUpperCase = new WorkspaceEdit();
+                    // makeUpperCase.replace(document.uri, range, document.getText(range).toUpperCase());
 
                     result.push({
                         title: 'Escape Input',
@@ -65,11 +65,11 @@ export class JSVDCodeActionProvider implements CodeActionProvider {
                         edit: edit
                     })
 
-                    result.push({
-                        title: 'Make UpperCase',
-                        kind: CodeActionKind.QuickFix,
-                        edit: makeUpperCase
-                    })
+                    // result.push({
+                    //     title: 'Make UpperCase',
+                    //     kind: CodeActionKind.QuickFix,
+                    //     edit: makeUpperCase
+                    // })
                 }
             }
         })
