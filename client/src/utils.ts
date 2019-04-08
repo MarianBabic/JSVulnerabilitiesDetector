@@ -55,7 +55,6 @@ export class JSVDCodeActionProvider implements CodeActionProvider {
                 if (element.code.toString() === 'jsvd-4') {
                     const edit = new WorkspaceEdit();
                     edit.replace(document.uri, range, `escape(${document.getText(range)})`);
-                    // workspace.applyEdit(edit)
 
                     const makeUpperCase = new WorkspaceEdit();
                     makeUpperCase.replace(document.uri, range, document.getText(range).toUpperCase());
