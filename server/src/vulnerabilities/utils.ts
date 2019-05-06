@@ -25,7 +25,7 @@ export function getDiagnostic(
             end: rangeEnd
         },
         message: messageMain,
-        source: 'JS Vulnerabilities Detector',
+        source: 'JS Vuln. Detector',
         code: 'jsvd-' + codeSuffix
     };
 
