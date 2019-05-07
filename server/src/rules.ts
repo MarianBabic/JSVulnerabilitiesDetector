@@ -48,34 +48,37 @@ function checkForHtmlRenderingMethods(
     hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
 
     let diagnostics: Diagnostic[] = [];
-    const lines: string[] = text.split('\n');
-    let charsCount: number = 0;
-    const innerHtmlStart = '.innerHTML';
-    const outerHtmlStart = '.outerHTML';
-    const writeStart = '.write(';
-    const writeLnStart = '.writeln(';
 
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(innerHtmlStart) || lines[i].includes(outerHtmlStart) || (lines[i].includes(writeStart) && !lines[i].includes(writeStart + 'escape(')) || lines[i].includes(writeLnStart)) {
-            let rangeStart: number = charsCount;
-            let rangeEnd: number;
+    for (let i = 0; i < 4; i++) {
+        let pattern: RegExp;
+        switch (i) {
+            case (0):
+                pattern = /.innerHTML/g;
+                break;
+            case (1):
+                pattern = /.outerHTML/g;
+                break;
+            case (2):
+                pattern = /.write\(/g;
+                break;
+            case (3):
+                pattern = /.writeln\(/g;
+        }
+        let m: RegExpExecArray | null;
 
-            if (lines[i].includes(innerHtmlStart)) {
-                rangeStart += lines[i].indexOf(innerHtmlStart);
-                rangeEnd = rangeStart + innerHtmlStart.length;
-            } else if (lines[i].includes(outerHtmlStart)) {
-                rangeStart += lines[i].indexOf(outerHtmlStart);
-                rangeEnd = rangeStart + outerHtmlStart.length;
-            } else if (lines[i].includes(writeStart)) {
-                rangeStart += lines[i].indexOf(writeStart);
-                // rangeEnd = rangeStart + writeStart.length;
-                rangeEnd = charsCount + lines[i].length; // to the end of current line
-            } else if (lines[i].includes(writeLnStart)) {
-                rangeStart += lines[i].indexOf(writeLnStart);
-                // rangeEnd = rangeStart + writeLnStart.length;
-                rangeEnd = charsCount + lines[i].length; // to the end of current line
+        while ((m = pattern.exec(text)) && problemsCount < maxNumberOfProblems) {
+            const isWriteOrWriteLn: boolean = i === 2 || i === 3;
+            // already sanitized function calls will not be highlighted
+            if (isWriteOrWriteLn && text.substr(pattern.lastIndex).startsWith('escape(')) {
+                continue;
             }
+            problemsCount++;
+            const rangeStart: number = m.index;
 
+            let rangeEnd: number = rangeStart + m[0].length;
+            if (isWriteOrWriteLn) {
+                rangeEnd += text.substring(rangeEnd).indexOf('\n')
+            }
             const diagnostic: Diagnostic = utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
@@ -87,13 +90,11 @@ function checkForHtmlRenderingMethods(
                 'Possible XSS vulnerability if untrusted data are inserted.'
             );
             diagnostics.push(diagnostic);
-
-            problemsCount++;
-            if (problemsCount == maxNumberOfProblems) {
-                break;
-            }
         }
-        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
+
+        if (problemsCount == maxNumberOfProblems) {
+            break;
+        }
     }
 
     return diagnostics;
