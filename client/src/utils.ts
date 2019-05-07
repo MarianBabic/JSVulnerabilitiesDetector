@@ -52,12 +52,43 @@ export class JSVDCodeActionProvider implements CodeActionProvider {
 
         diagnosticsArray.forEach(element => {
             if (element.code.toString().includes('jsvd-')) { // only jsvd diagnostics'
-                if (element.code.toString() === 'jsvd-4' && document.getText(range).includes('.write(')) {
+                const innerHtmlStart = '.innerHTML';
+                const writeStart = '.write(';
+                const writeLnStart = '.writeln(';
+
+                if (element.code.toString() === 'jsvd-2' && document.getText(range).includes(innerHtmlStart)) {
+                    const replaceWithInnerText = new WorkspaceEdit();
+                    replaceWithInnerText.replace(document.uri, range, '.innerText');
+
+                    const replaceWithTextContent = new WorkspaceEdit();
+                    replaceWithTextContent.replace(document.uri, range, '.textContent');
+
+                    result.push(
+                        {
+                            title: 'Replace .innerHTML with .innerText',
+                            kind: CodeActionKind.QuickFix,
+                            edit: replaceWithInnerText
+                        },
+                        {
+                            title: 'Replace .innerHTML with .textContent',
+                            kind: CodeActionKind.QuickFix,
+                            edit: replaceWithTextContent
+                        }
+                    );
+                }
+
+                if (element.code.toString() === 'jsvd-2'
+                    && (document.getText(range).includes(writeStart) || document.getText(range).includes(writeLnStart))
+                ) {
                     const escapeAssignedData = new WorkspaceEdit();
-                    // TODO: make this function smarter :)
                     function getNewText(underlinedText: string): string {
-                        const assignedData = underlinedText.substring(7, underlinedText.length - 2);
-                        return `.write(escape(${assignedData}));`;
+                        if (document.getText(range).includes(writeStart)) {
+                            const assignedData = underlinedText.substring(writeStart.length, underlinedText.length - 2);
+                            return `.write(escape(${assignedData}));`;
+                        } else {
+                            const assignedData = underlinedText.substring(writeLnStart.length, underlinedText.length - 2);
+                            return `.writeln(escape(${assignedData}));`;
+                        }
                     }
                     escapeAssignedData.replace(document.uri, range, getNewText(document.getText(range)));
 

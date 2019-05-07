@@ -1,6 +1,112 @@
 import { Diagnostic, DiagnosticSeverity, TextDocument } from 'vscode-languageserver';
 import * as utils from './utils';
 
+// check for 'eval' functions
+function checkForEval(
+    text: string,
+    problemsCount: number,
+    maxNumberOfProblems: number,
+    textDocument: TextDocument,
+    hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
+
+    let diagnostics: Diagnostic[] = [];
+    const lines: string[] = text.split('\n');
+    let charsCount: number = 0;
+    const evalStart: string = 'eval(';
+
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(evalStart) && [undefined, ' '].includes(lines[i][lines[i].indexOf(evalStart) - 1])) {
+            const rangeStart: number = charsCount + lines[i].indexOf(evalStart);
+            const rangeEnd: number = rangeStart + evalStart.length;
+            const diagnostic: Diagnostic = utils.getDiagnostic(
+                DiagnosticSeverity.Warning,
+                textDocument.positionAt(rangeStart),
+                textDocument.positionAt(rangeEnd),
+                'Beware of the data inserted into EVAL function.',
+                '1',
+                hasDiagnosticRelatedInformationCapability,
+                textDocument.uri,
+                'Possible Injection and XSS vulnerability if untrusted data are inserted.'
+            );
+            diagnostics.push(diagnostic);
+
+            problemsCount++;
+            if (problemsCount == maxNumberOfProblems) {
+                break;
+            }
+        }
+        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
+    }
+
+    return diagnostics;
+}
+
+/**
+ * check for HTML rendering methods:
+ * 1. element.innerHTML = '...';
+ * 2. element.outerHTML = '...';
+ * 3. document.write('...');
+ * 4. document.writeln('...');
+ * */
+function checkForHtmlRenderingMethods(
+    text: string,
+    problemsCount: number,
+    maxNumberOfProblems: number,
+    textDocument: TextDocument,
+    hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
+
+    let diagnostics: Diagnostic[] = [];
+    const lines: string[] = text.split('\n');
+    let charsCount: number = 0;
+    const innerHtmlStart = '.innerHTML';
+    const outerHtmlStart = '.outerHTML';
+    const writeStart = '.write(';
+    const writeLnStart = '.writeln(';
+
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(innerHtmlStart) || lines[i].includes(outerHtmlStart) || (lines[i].includes(writeStart) && !lines[i].includes(writeStart + 'escape(')) || lines[i].includes(writeLnStart)) {
+            let rangeStart: number = charsCount;
+            let rangeEnd: number;
+
+            if (lines[i].includes(innerHtmlStart)) {
+                rangeStart += lines[i].indexOf(innerHtmlStart);
+                rangeEnd = rangeStart + innerHtmlStart.length;
+            } else if (lines[i].includes(outerHtmlStart)) {
+                rangeStart += lines[i].indexOf(outerHtmlStart);
+                rangeEnd = rangeStart + outerHtmlStart.length;
+            } else if (lines[i].includes(writeStart)) {
+                rangeStart += lines[i].indexOf(writeStart);
+                // rangeEnd = rangeStart + writeStart.length;
+                rangeEnd = charsCount + lines[i].length; // to the end of current line
+            } else if (lines[i].includes(writeLnStart)) {
+                rangeStart += lines[i].indexOf(writeLnStart);
+                // rangeEnd = rangeStart + writeLnStart.length;
+                rangeEnd = charsCount + lines[i].length; // to the end of current line
+            }
+
+            const diagnostic: Diagnostic = utils.getDiagnostic(
+                DiagnosticSeverity.Warning,
+                textDocument.positionAt(rangeStart),
+                textDocument.positionAt(rangeEnd),
+                'Beware of the data inserted into this function.',
+                '2',
+                hasDiagnosticRelatedInformationCapability,
+                textDocument.uri,
+                'Possible XSS vulnerability if untrusted data are inserted.'
+            );
+            diagnostics.push(diagnostic);
+
+            problemsCount++;
+            if (problemsCount == maxNumberOfProblems) {
+                break;
+            }
+        }
+        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
+    }
+
+    return diagnostics;
+}
+
 // check for 'TODO' notes in the code
 function checkForTodos(
     text: string,
@@ -21,8 +127,8 @@ function checkForTodos(
             DiagnosticSeverity.Warning,
             textDocument.positionAt(rangeStart),
             textDocument.positionAt(rangeEnd),
-            'TODO should be resolved.',
-            '1',
+            'Resolve the TODO.',
+            '3',
             false,
             null,
             null
@@ -73,116 +179,11 @@ function checkForScriptStrings(
                 DiagnosticSeverity.Warning,
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
-                `Consider using '<script>...</script>' block of the code carefully.`,
-                '2',
-                hasDiagnosticRelatedInformationCapability,
-                textDocument.uri,
-                `Avoid inserting untrusted data between '<script>' tags. Possible XSS vulnerability.`
-            );
-            diagnostics.push(diagnostic);
-
-            problemsCount++;
-            if (problemsCount == maxNumberOfProblems) {
-                break;
-            }
-        }
-        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
-    }
-
-    return diagnostics;
-}
-
-// check for 'eval' functions
-function checkForEval(
-    text: string,
-    problemsCount: number,
-    maxNumberOfProblems: number,
-    textDocument: TextDocument,
-    hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
-
-    let diagnostics: Diagnostic[] = [];
-    const lines: string[] = text.split('\n');
-    let charsCount: number = 0;
-    const evalStart: string = 'eval(';
-
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(evalStart) && [undefined, ' '].includes(lines[i][lines[i].indexOf(evalStart) - 1])) {
-            const rangeStart: number = charsCount + lines[i].indexOf(evalStart);
-            const rangeEnd: number = rangeStart + evalStart.length;
-            const diagnostic: Diagnostic = utils.getDiagnostic(
-                DiagnosticSeverity.Warning,
-                textDocument.positionAt(rangeStart),
-                textDocument.positionAt(rangeEnd),
-                'Consider using EVAL function carefully.',
-                '3',
-                hasDiagnosticRelatedInformationCapability,
-                textDocument.uri,
-                'Avoid populating this function with untrusted data. Possible XSS vulnerability.'
-            );
-            diagnostics.push(diagnostic);
-
-            problemsCount++;
-            if (problemsCount == maxNumberOfProblems) {
-                break;
-            }
-        }
-        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
-    }
-
-    return diagnostics;
-}
-
-/**
- * check for HTML rendering methods:
- * 1. element.innerHTML = "...";
- * 2. element.outerHTML = "...";
- * 3. document.write(...);
- * 4. document.writeln(...);
- * */
-function checkForHtmlRenderingMethods(
-    text: string,
-    problemsCount: number,
-    maxNumberOfProblems: number,
-    textDocument: TextDocument,
-    hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
-
-    let diagnostics: Diagnostic[] = [];
-    const lines: string[] = text.split('\n');
-    let charsCount: number = 0;
-    const innerHtmlStart = '.innerHTML';
-    const outerHtmlStart = '.outerHTML';
-    const writeStart = '.write(';
-    const writeLnStart = '.writeln(';
-
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(innerHtmlStart) || lines[i].includes(outerHtmlStart) || (lines[i].includes(writeStart) && !lines[i].includes(writeStart + 'escape(')) || lines[i].includes(writeLnStart)) {
-            let rangeStart: number = charsCount;
-            let rangeEnd: number;
-
-            if (lines[i].includes(innerHtmlStart)) {
-                rangeStart += lines[i].indexOf(innerHtmlStart);
-                rangeEnd = rangeStart + innerHtmlStart.length;
-            } else if (lines[i].includes(outerHtmlStart)) {
-                rangeStart += lines[i].indexOf(outerHtmlStart);
-                rangeEnd = rangeStart + outerHtmlStart.length;
-            } else if (lines[i].includes(writeStart)) {
-                rangeStart += lines[i].indexOf(writeStart);
-                // rangeEnd = rangeStart + writeStart.length;
-                rangeEnd = charsCount + lines[i].length; // to the end of current line
-            } else if (lines[i].includes(writeLnStart)) {
-                rangeStart += lines[i].indexOf(writeLnStart);
-                rangeEnd = rangeStart + writeLnStart.length;
-            }
-
-            const diagnostic: Diagnostic = utils.getDiagnostic(
-                DiagnosticSeverity.Warning,
-                textDocument.positionAt(rangeStart),
-                textDocument.positionAt(rangeEnd),
-                'Consider using this HTML rendering method carefully.',
+                `Beware of the data inserted into '<script>...</script>' block of the code.`,
                 '4',
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
-                'Avoid populating this method with untrusted data. Possible XSS vulnerability.'
+                `Possible XSS vulnerability if untrusted data are inserted.`
             );
             diagnostics.push(diagnostic);
 
