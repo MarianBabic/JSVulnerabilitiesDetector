@@ -38,7 +38,7 @@ None.
 
 ### 0.3.0
 
-Code actions for some of the detected vulnerabilities introduced.
+Quick fixes as code actions for some of the detected vulnerabilities implemented.
 
 ### 0.2.0
 
@@ -46,4 +46,4 @@ Rules can be turned on/off in Settings.
 
 ### 0.1.0
 
-First version demonstrating that this extension utilising language server detects and highlights suspicious and potentionally vulnerable code in Javascript and Typescript files.
+Alpha version.
