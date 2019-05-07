@@ -28,3 +28,4 @@ divEl.outerHTML = input;
 document.write(input);
 document.writeln(input);
 
+eval()

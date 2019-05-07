@@ -1,7 +1,7 @@
 import { Diagnostic, DiagnosticSeverity, TextDocument } from 'vscode-languageserver';
 import * as utils from './utils';
 
-// check for 'eval' functions
+// check for 'eval()' functions
 function checkForEval(
     text: string,
     problemsCount: number,
@@ -10,32 +10,24 @@ function checkForEval(
     hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
 
     let diagnostics: Diagnostic[] = [];
-    const lines: string[] = text.split('\n');
-    let charsCount: number = 0;
-    const evalStart: string = 'eval(';
+    let pattern: RegExp = /eval\(/g;
+    let m: RegExpExecArray | null;
 
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(evalStart) && [undefined, ' '].includes(lines[i][lines[i].indexOf(evalStart) - 1])) {
-            const rangeStart: number = charsCount + lines[i].indexOf(evalStart);
-            const rangeEnd: number = rangeStart + evalStart.length;
-            const diagnostic: Diagnostic = utils.getDiagnostic(
-                DiagnosticSeverity.Warning,
-                textDocument.positionAt(rangeStart),
-                textDocument.positionAt(rangeEnd),
-                'Beware of the data inserted into EVAL function.',
-                '1',
-                hasDiagnosticRelatedInformationCapability,
-                textDocument.uri,
-                'Possible Injection and XSS vulnerability if untrusted data are inserted.'
-            );
-            diagnostics.push(diagnostic);
-
-            problemsCount++;
-            if (problemsCount == maxNumberOfProblems) {
-                break;
-            }
-        }
-        charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
+    while ((m = pattern.exec(text)) && problemsCount < maxNumberOfProblems) {
+        problemsCount++;
+        const rangeStart: number = m.index;
+        const rangeEnd: number = rangeStart + m[0].length;
+        const diagnostic: Diagnostic = utils.getDiagnostic(
+            DiagnosticSeverity.Warning,
+            textDocument.positionAt(rangeStart),
+            textDocument.positionAt(rangeEnd),
+            'Beware of the data inserted into EVAL function.',
+            '1',
+            hasDiagnosticRelatedInformationCapability,
+            textDocument.uri,
+            'Possible Injection and XSS vulnerability if untrusted data are inserted.'
+        );
+        diagnostics.push(diagnostic);
     }
 
     return diagnostics;
@@ -107,38 +99,6 @@ function checkForHtmlRenderingMethods(
     return diagnostics;
 }
 
-// check for 'TODO' notes in the code
-function checkForTodos(
-    text: string,
-    problemsCount: number,
-    maxNumberOfProblems: number,
-    textDocument: TextDocument,
-    hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
-
-    let diagnostics: Diagnostic[] = [];
-    let pattern: RegExp = /TODO/g;
-    let m: RegExpExecArray | null;
-
-    while ((m = pattern.exec(text)) && problemsCount < maxNumberOfProblems) {
-        problemsCount++;
-        const rangeStart: number = m.index;
-        const rangeEnd: number = rangeStart + m[0].length;
-        const diagnostic: Diagnostic = utils.getDiagnostic(
-            DiagnosticSeverity.Warning,
-            textDocument.positionAt(rangeStart),
-            textDocument.positionAt(rangeEnd),
-            'Resolve the TODO.',
-            '3',
-            false,
-            null,
-            null
-        );
-        diagnostics.push(diagnostic);
-    }
-
-    return diagnostics;
-}
-
 // check for '<script>...</script>' blocks of the code
 function checkForScriptStrings(
     text: string,
@@ -180,7 +140,7 @@ function checkForScriptStrings(
                 textDocument.positionAt(rangeStart),
                 textDocument.positionAt(rangeEnd),
                 `Beware of the data inserted into '<script>...</script>' block of the code.`,
-                '4',
+                '3',
                 hasDiagnosticRelatedInformationCapability,
                 textDocument.uri,
                 `Possible XSS vulnerability if untrusted data are inserted.`
@@ -193,6 +153,38 @@ function checkForScriptStrings(
             }
         }
         charsCount += lines[i].length + 1; // +1 to include \n newline character in counting too
+    }
+
+    return diagnostics;
+}
+
+// check for 'TODO' notes in the code
+function checkForTodos(
+    text: string,
+    problemsCount: number,
+    maxNumberOfProblems: number,
+    textDocument: TextDocument,
+    hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
+
+    let diagnostics: Diagnostic[] = [];
+    let pattern: RegExp = /TODO/g;
+    let m: RegExpExecArray | null;
+
+    while ((m = pattern.exec(text)) && problemsCount < maxNumberOfProblems) {
+        problemsCount++;
+        const rangeStart: number = m.index;
+        const rangeEnd: number = rangeStart + m[0].length;
+        const diagnostic: Diagnostic = utils.getDiagnostic(
+            DiagnosticSeverity.Warning,
+            textDocument.positionAt(rangeStart),
+            textDocument.positionAt(rangeEnd),
+            'Resolve the TODO.',
+            '4',
+            false,
+            null,
+            null
+        );
+        diagnostics.push(diagnostic);
     }
 
     return diagnostics;
