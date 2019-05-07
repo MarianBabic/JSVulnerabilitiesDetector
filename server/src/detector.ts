@@ -1,4 +1,4 @@
-import { Diagnostic, TextDocument, CodeAction, CodeActionKind, CodeActionParams, Command, CodeActionContext, Range, TextDocumentIdentifier, Position, WorkspaceEdit } from 'vscode-languageserver';
+import { Diagnostic, TextDocument } from 'vscode-languageserver';
 import { JSVulnerabilitiesDetectorSettings } from './utils';
 import * as rules from './rules';
 

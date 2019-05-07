@@ -15,8 +15,8 @@ import {
 	TextDocumentPositionParams
 } from 'vscode-languageserver';
 
-import * as detector from './vulnerabilities/detector';
-import { JSVulnerabilitiesDetectorSettings } from './vulnerabilities/utils';
+import * as detector from './detector';
+import { JSVulnerabilitiesDetectorSettings } from './utils';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
