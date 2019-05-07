@@ -11,7 +11,7 @@ These potential vulnerabilities are detected:
     2. document.writeln('...');
     3. element.innerHTML = '...';
     4. element.outerHTML = '...';
-- '<script>...</script>' code blocks
+- 'script' code blocks
 - TODO notes
 
 Quick fixes offered to relevant issues:
