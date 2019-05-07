@@ -77,7 +77,7 @@ function checkForHtmlRenderingMethods(
 
             let rangeEnd: number = rangeStart + m[0].length;
             if (isWriteOrWriteLn) {
-                rangeEnd += text.substring(rangeEnd).indexOf('\n')
+                rangeEnd += text.substring(rangeEnd).indexOf('\n') // till the end of the current line
             }
             const diagnostic: Diagnostic = utils.getDiagnostic(
                 DiagnosticSeverity.Warning,
