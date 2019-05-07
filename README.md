@@ -1,20 +1,23 @@
 # README
 
-JS Vulnerabilities Detector is a VisualStudio Code extension which detects security vulnerabilities in JavaScript / Typescript code.
+JS Vulnerabilities Detector is a Visual Studio Code extension which detects security vulnerabilities in JavaScript / Typescript code. As you open a JS or TS file and start writing code, it scans the file and highlights suspicious and potentially vulnerable code. Detected vulnerabilities are also listed in the ''Problems' tab. Quick fixes are offered to relevant issues.
 
 ## Features
 
-Detects and highlights suspicious and potentionally vulnerable code.
-
-Rules:
-- TODO notes
-- 'script' code blocks
-- 'eval' functions
+These potential vulnerabilities are detected:
+- 'eval(...)' functions
 - HTML rendering methods:
-    1. element.innerHTML = "...";
-    2. element.outerHTML = "...";
-    3. document.write(...);
-    4. document.writeln(...);
+    1. document.write('...');
+    2. document.writeln('...');
+    3. element.innerHTML = '...';
+    4. element.outerHTML = '...';
+- '<script>...</script>' code blocks
+- TODO notes
+
+Quick fixes offered to relevant issues:
+- document.write('...') -> document.write(escape('...'))
+- document.writeln('...') -> document.writeln(escape('...'))
+- element.innerHTML = '...' -> element.innerText = '...' or element.textContent = '...'
 
 ## Requirements
 
