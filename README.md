@@ -42,7 +42,7 @@ Quick fixes as code actions for some of the detected vulnerabilities implemented
 
 ### 0.2.0
 
-Rules can be turned on/off in Settings.
+Individual rules can be turned on/off in Settings.
 
 ### 0.1.0
 
