@@ -10,7 +10,7 @@ function checkForEval(
     hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
 
     let diagnostics: Diagnostic[] = [];
-    let pattern: RegExp = /eval\(/g;
+    let pattern: RegExp = /\beval\(/g;
     let m: RegExpExecArray | null;
 
     while ((m = pattern.exec(text)) && problemsCount < maxNumberOfProblems) {
@@ -53,16 +53,16 @@ function checkForHtmlRenderingMethods(
         let pattern: RegExp;
         switch (i) {
             case (0):
-                pattern = /.innerHTML/g;
+                pattern = /\.innerHTML/g;
                 break;
             case (1):
-                pattern = /.outerHTML/g;
+                pattern = /\.outerHTML/g;
                 break;
             case (2):
-                pattern = /.write\(/g;
+                pattern = /\.write\(/g;
                 break;
             case (3):
-                pattern = /.writeln\(/g;
+                pattern = /\.writeln\(/g;
         }
         let m: RegExpExecArray | null;
 
@@ -168,7 +168,7 @@ function checkForTodos(
     hasDiagnosticRelatedInformationCapability: boolean): Diagnostic[] {
 
     let diagnostics: Diagnostic[] = [];
-    let pattern: RegExp = /TODO/g;
+    let pattern: RegExp = /\bTODO\b/g;
     let m: RegExpExecArray | null;
 
     while ((m = pattern.exec(text)) && problemsCount < maxNumberOfProblems) {
